@@ -137,7 +137,7 @@ public:
     }
 };
 
-int main(int argc, char* argv[])
+int main()
 {
     SetConsoleCP(1251); // Установка кодировки консоли для ввода
     SetConsoleOutputCP(1251); // Установка кодировки консоли для вывода
