@@ -2,112 +2,178 @@
 #include <windows.h>
 using namespace std;
 
+// Структура узла связанного списка
 struct Node {
-
-    int data;
-    Node* next;
-
+    int data; // Значение, хранящееся в узле
+    Node* next; // Указатель на следующий узел
 };
 
+// Класс Queue, реализующий структуру данных очередь
 class Queue {
 private:
-    Node* head;
-    Node* tail;
-    int size;
-
+    Node* head; // Указатель на первый узел очереди
+    Node* tail; // Указатель на последний узел очереди
+    int size; // Количество элементов в очереди
 public:
     Queue() {
-        head = tail = nullptr;
+        head = tail = nullptr; // Инициализация пустой очереди
         size = 0;
     }
 
     ~Queue() {
-        clear();
+        clear(); // Освобождение памяти при удалении объекта
     }
 
-    void queue(int data) {
-        Node* temp = new Node;
-        temp->data = data;
-        temp->next = nullptr;
-        if (head == nullptr) {
-            head = temp;
+    void queue(int data) { // Функция для добавления элемента в очередь
+        Node* temp = new Node(); // Создание нового узла
+        temp->data = data; // Присваивание значения новому узлу
+        temp->next = nullptr; // Установка следующего указателя на nullptr
+
+        if (head == nullptr) { // Если очередь пуста
+            head = temp; // Новый узел становится головой
         }
         else {
-            tail->next = temp;
+            tail->next = temp; // Новый узел добавляется в конец очереди
         }
-        tail = temp;
-        size++;
+
+        tail = temp; // Обновление указателя на последний узел
+        size++; // Увеличение размера очереди
     }
 
-    int count(int data) {
-        int count = 0;
-        Node* curr = head;
-        while (curr != nullptr) {
-            if (curr->data == data) {
-                count++;
+    int unqueue() { // Функция для извлечения элемента из очереди
+        if (head == nullptr) {
+            throw runtime_error("Стек пуст!"); // Выбрасывается исключение, если очередь пуста
+        }
+        Node* temp = head; // Сохранение указателя на первый узел
+        int data = temp->data; // Получение значения первого узла
+        head = head->next; // Перемещение головы на следующий узел
+        delete temp; // Освобождение памяти первого узла
+        size--; // Уменьшение размера очереди
+        return data; // Возвращение значения извлеченного элемента
+    }
+
+    void insertBeforeNegative() { // Функция для вставки 1 перед отрицательными элементами
+        Node* curr = head; // Текущий указатель, начиная с головы
+        Node* prev = nullptr; // Предыдущий указатель, начиная с nullptr
+        while (curr != nullptr) { // Проход по всем узлам очереди
+            if (curr->data < 0) { // Если текущий элемент отрицательный
+                Node* temp = new Node(); // Создание нового узла со значением 1
+                temp->data = 1;
+                temp->next = curr; // Новый узел указывает на текущий
+                if (prev == nullptr) { // Если это первый отрицательный элемент
+                    head = temp; // Новый узел становится головой
+                }
+                else {
+                    prev->next = temp; // Иначе, новый узел вставляется перед текущим
+                }
+                prev = temp; // Обновление предыдущего указателя
+                size++; // Увеличение размера очереди
             }
-            curr = curr->next;
+            else {
+                prev = curr; // Если элемент не отрицательный, обновляем предыдущий указатель
+            }
+            curr = curr->next; // Переход к следующему узлу
         }
-        return count;
     }
 
-    void clear() {
-        Node* curr = head;
-        while (curr != nullptr) {
-            Node* temp = curr;
-            curr = curr->next;
-            delete temp;
+    // Удаление из очереди всех элементов с отрицательной информационной частью
+    void removeNegative() {
+        Node* prev = nullptr; // Указатель на предыдущий узел
+        Node* curr = head; // Указатель на текущий узел
+        while (curr != nullptr) { // Пока не достигнут конец очереди
+            if (curr->data < 0) { // Если текущий узел содержит отрицательное число
+                Node* temp = curr; // Сохранение указателя на текущий узел
+                if (prev == nullptr) { // Если текущий узел является головой
+                    head = head->next; // Перемещение головы на следующий узел
+                }
+                else { // Если текущий узел не является головой
+                    prev->next = curr->next; // Пропуск текущего узла
+                }
+                if (curr == tail) { // Если текущий узел является хвостом
+                    tail = prev; // Предыдущий узел становится хвостом
+                }
+                curr = curr->next; // Переход к следующему узлу
+                delete temp; // Удаление текущего узла
+                size--; // Уменьшение размера очереди
+            }
+            else { // Если текущий узел не содержит отрицательное число
+                prev = curr; // Текущий узел становится предыдущим
+                curr = curr->next; // Переход к следующему узлу
+            }
         }
-        head = nullptr;
-        tail = nullptr;
-        size = 0;
     }
 
-    void outPut() {
-        Node* curr = head;
-        while (curr != nullptr) {
-            cout << curr->data << " ";
-            curr = curr->next;
+    int count(int data) { // Функция для подсчета количества вхождений заданного значения
+        int count = 0; // Счетчик вхождений
+        Node* curr = head; // Текущий указатель, начиная с головы
+        while (curr != nullptr) { // Проход по всем узлам очереди
+            if (curr->data == data) { // Если значение совпадает
+                count++; // Увеличение счетчика
+            }
+            curr = curr->next; // Переход к следующему узлу
         }
+        return count; // Возвращение количества вхождений
+    }
+
+    void clear() { // Функция для очистки очереди
+        Node* curr = head; // Текущий указатель, начиная с головы
+        while (curr != nullptr) { // Проход по всем узлам очереди
+            Node* temp = curr; // Сохранение текущего узла
+            curr = curr->next; // Переход к следующему узлу
+            delete temp; // Освобождение памяти текущего узла
+        }
+        head = nullptr; // Установка головы в nullptr
+        tail = nullptr; // Установка хвоста в nullptr
+        size = 0; // Обнуление размера очереди
+    }
+
+    void outPut() { // Функция для вывода очереди
+        Node* curr = head; // Текущий указатель, начиная с головы
+        while (curr != nullptr) { // Проход по всем узлам очереди
+            cout << curr->data << " "; // Вывод значения текущего узла
+            curr = curr->next; // Переход к следующему узлу
+        }
+        cout << endl; // Перевод строки после вывода очереди
     }
 };
 
-int main()
+int main(int argc, char* argv[])
 {
     SetConsoleCP(1251); // Установка кодировки консоли для ввода
     SetConsoleOutputCP(1251); // Установка кодировки консоли для вывода
 
-    Queue q;
-    int choice;
-    int data;
-    bool exit = false;
-    while (!exit) {
-        system("cls");
-        cout << "Выберите операцию:\n";
-        cout << "1. Добавить элемент в очередь\n";
-        cout << "2. Извлечь элемент из очереди\n";
-        cout << "3. Вставить перед каждым отрицательным числом элемент со значением 1\n";
-        cout << "4. Удалить из очереди все элементы с отрицательной информационной частью\n";
-        cout << "5. Подсчитать количество вхождений переданного значения в коллекцию\n";
-        cout << "6. Удалить все элементы коллекции\n";
-        cout << "7. Выход\n";
-        cin >> choice;
-        switch (choice)
-        {
-        case 1:
-            cout << "Введите значение, которое хотите добавить в очередь: ";
-            cin >> data;
-            q.queue(data);
-            cout << "Элемент " << data << " добавлен в очередь\n";
+    Queue q; // Создание объекта очереди
+    string choice; // Переменная для хранения выбора пользователя
+    int data; // Переменная для хранения ввода пользователя
+    while (true) { // Цикл, пока пользователь не выберет выход
+        cin >> choice; // Ввод выбора пользователя
+        if (choice == "insert") {
+            cin >> data; // Ввод значения
+            q.queue(data); // Добавление элемента в очередь
+        }
+        else if (choice == "front") {
+            cout << q.unqueue() << endl; // Извлечение элемента из очереди
+        }
+        else if (choice == "insertBeforeNegative") { // Если выбрана вставка 1 перед отрицательными элементами
+            q.insertBeforeNegative();
+        }
+        else if (choice == "removeNegative") { // Если выбрано удаление отрицательных элементов
+            q.removeNegative();
+        }
+        else if (choice == "count") {  // Если выбран подсчет вхождений
+            cin >> data; // Ввод значения
+            cout << q.count(data) << endl; // Вывод результата
+        }
+        else if (choice == "clear") { // Если выбрана очистка очереди
+            q.clear();
+            cout << "Очередь очищена" << endl; // Сообщение об успешной очистке
+        }
+        else if (choice == "stop") { // Если выбран выход
             break;
-        case 2:
-            cout << "Очередь:\n";
-            q.outPut();
-            system("pause");
-            break;
-        default:
+        }
+        else { // Если выбрано неверное значение
+            cout << "Неверный выбор, попробуйте еще раз" << endl; // Сообщение об ошибке
             break;
         }
     }
 }
-
