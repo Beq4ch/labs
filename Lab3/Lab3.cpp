@@ -12,7 +12,7 @@ struct Node {
 };
 
 class List {
-public:
+private:
     Node* tail;
     Node* currentNode;
     int size;
@@ -39,6 +39,7 @@ public:
         return currentNode;
     }
 
+public:
     List() {
         tail = currentNode = nullptr;
         size = currentIndex = 0;
@@ -229,6 +230,10 @@ int main()
         else if (choice == "removeAt") {
             cin >> index;
             list.removeAt(index);
+        }
+        else if (choice == "elementAt") {
+            cin >> index;
+            cout << list.elementAt(index) << endl;
         }
         else if (choice == "count") {
             list.count();
