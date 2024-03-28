@@ -20,9 +20,8 @@ private:
     int currentIndex;
 
     Node* getNode(int index) {
-        if (index < 0) {
-            return nullptr;
-        }
+        if (index < 0) return nullptr;
+
         else if (index >= size) {
             index %= size;
         }
@@ -132,6 +131,7 @@ public:
     }
 
     void insertBeforeNegative() {
+        if (tail == nullptr) return;
         Node* curr = tail->next;
         for (int i = 0; i < size; i++) {
             if (curr->data < 0) {
@@ -142,9 +142,7 @@ public:
     }
 
     void removeNegative() {
-        if (tail == nullptr) {
-            return;
-        }
+        if (tail == nullptr) return;
 
         Node* current = tail->next;
         Node* prev = tail;
@@ -183,6 +181,7 @@ public:
     }
 
     int count(int value) {
+        if (tail == nullptr) return 0;
         Node* curr = tail->next;
         int k = 0;
         for (int i = 0; i < size; i++) {
