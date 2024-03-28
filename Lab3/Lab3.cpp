@@ -12,7 +12,7 @@ struct Node {
 };
 
 class List {
-private:
+public:
     Node* tail;
     Node* currentNode;
     int size;
@@ -38,8 +38,6 @@ private:
         }
         return currentNode;
     }
-
-public:
 
     List() {
         tail = currentNode = nullptr;
