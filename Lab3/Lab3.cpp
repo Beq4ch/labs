@@ -34,9 +34,6 @@ private:
             currentNode = tail->next;
         }
 
-        /*for (; currentIndex < index; currentIndex++) {
-            currentNode = currentNode->next;
-        }*/
         while (currentIndex < index) {
             currentNode = currentNode->next;
             currentIndex++;
@@ -119,6 +116,9 @@ public:
         }
         delete temp;
         size--;
+
+        currentNode = nullptr;
+        currentIndex = 0;
     }
 
     int elementAt(int index) {
@@ -136,12 +136,23 @@ public:
     void insertBeforeNegative() {
         if (tail == nullptr) return;
         Node* curr = tail->next;
-        for (int i = 0; i < size; i++) {
+        Node* prev = tail;
+        do  {
             if (curr->data < 0) {
-                insert(i, 1);
+                Node* newNode = new Node(1);
+                if (curr == tail->next) {
+                    newNode->next = tail->next;
+                    tail->next = newNode;
+                }
+                else {
+                    newNode->next = curr;
+                    prev->next = newNode;
+                }
+                size++;
             }
+            prev = curr;
             curr = curr->next;
-        }
+        } while (curr != tail->next);
     }
 
     void removeNegative() {
@@ -178,9 +189,6 @@ public:
             delete temp;
             size--;
         }
-
-        currentNode = nullptr;
-        currentIndex = 0;
     }
 
     int count(int value) {
@@ -199,9 +207,8 @@ public:
     void clear() {
         if (tail == nullptr) return;
         Node* curr = tail->next;
-        Node* temp = nullptr;
         for (int i = 0; i < size; i++) {
-            temp = curr;
+            Node* temp = curr;
             curr = curr->next;
             delete temp;
         }
@@ -217,7 +224,6 @@ int main()
 {
 
     List list;
-    List* list1 = new List();
 
     string choice;
     int data;
@@ -229,8 +235,8 @@ int main()
             list.add(data);
         }
         else if (choice == "insert") {
-            cin >> data;
             cin >> index;
+            cin >> data;
             list.insert(index, data);
         }
         else if (choice == "removeAt") {
