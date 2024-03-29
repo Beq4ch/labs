@@ -19,8 +19,9 @@ private:
     int currentIndex;
 
     Node* getNode(int index) {
-        if (index < 0) return nullptr;
-
+        if (index < 0) {
+            return nullptr;
+        }
         else if (index >= size) {
             index %= size;
         }
@@ -191,6 +192,14 @@ public:
         return k;
     }
 
+    List* copy(int k) {
+        List* listCopy = new List();
+        for (int i = 0; i < size - k; i++) {
+            listCopy->add(elementAt(i));
+        }
+        return listCopy;
+    }
+
     void clear() {
         if (tail == nullptr) return;
         Node* curr = tail->next;
@@ -205,6 +214,12 @@ public:
         currentNode = nullptr;
         currentIndex = 0;
     }
+
+    void print() {
+        for (int i = 0; i < size; i++) {
+            cout << elementAt(i) << " ";
+        }
+    }
 };
 
 
@@ -212,6 +227,7 @@ int main()
 {
 
     List list;
+    List* list1 = new List();
 
     string choice;
     int data;
@@ -247,6 +263,10 @@ int main()
         else if (choice == "countData") { 
             cin >> data; 
             cout << list.count(data) << endl;
+        }
+        else if (choice == "copy") {
+            list1 = list.copy(3);
+            list1->print();
         }
         else if (choice == "clear") {
             list.clear();
