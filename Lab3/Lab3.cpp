@@ -34,8 +34,12 @@ private:
             currentNode = tail->next;
         }
 
-        for (; currentIndex < index; currentIndex++) {
+        /*for (; currentIndex < index; currentIndex++) {
             currentNode = currentNode->next;
+        }*/
+        while (currentIndex < index) {
+            currentNode = currentNode->next;
+            currentIndex++;
         }
         return currentNode;
     }
@@ -192,14 +196,6 @@ public:
         return k;
     }
 
-    List* copy(int k) {
-        List* listCopy = new List();
-        for (int i = 0; i < size - k; i++) {
-            listCopy->add(elementAt(i));
-        }
-        return listCopy;
-    }
-
     void clear() {
         if (tail == nullptr) return;
         Node* curr = tail->next;
@@ -213,12 +209,6 @@ public:
         size = 0;
         currentNode = nullptr;
         currentIndex = 0;
-    }
-
-    void print() {
-        for (int i = 0; i < size; i++) {
-            cout << elementAt(i) << " ";
-        }
     }
 };
 
@@ -263,10 +253,6 @@ int main()
         else if (choice == "countData") { 
             cin >> data; 
             cout << list.count(data) << endl;
-        }
-        else if (choice == "copy") {
-            list1 = list.copy(3);
-            list1->print();
         }
         else if (choice == "clear") {
             list.clear();
