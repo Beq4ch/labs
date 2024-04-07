@@ -16,36 +16,34 @@ struct Node {
 
 class List {
 private:
-
     Node* tail;
-    Node* lastAccessNode;
-    int lastAccessIndex;
+    Node* currentNode;
     int size;
+    int currentIndex;
 
     Node* getNode(int index) {
-        if (index >= size) index %= size;
-        if (lastAccessNode != nullptr && lastAccessIndex <= index) {
-            for (int i = lastAccessIndex; i < index; ++i) {
-                lastAccessNode = lastAccessNode->next;
-            }
-            lastAccessIndex = index;
-            return lastAccessNode;
+        if (index < 0) return nullptr;
+
+        if (index < currentIndex) {
+            currentIndex = 0;
+            currentNode = nullptr;
         }
-        else {
-            Node* current = tail;
-            for (int i = 0; i <= index; ++i) {
-                current = current->next;
-            }
-            lastAccessNode = current;
-            lastAccessIndex = index;
-            return current;
+        if (currentNode == nullptr) {
+            currentNode = tail->next;
         }
+
+        while (currentIndex < index) {
+            currentNode = currentNode->next;
+            currentIndex++;
+        }
+        return currentNode;
     }
 
 public:
+
     List() {
-        tail = lastAccessNode = nullptr;
-        size = lastAccessIndex = 0;
+        tail = currentNode = nullptr;
+        size = currentIndex = 0;
     }
 
     ~List() {
@@ -67,147 +65,193 @@ public:
     }
 
     void insert(int index, int value) {
-        if (size == 0) {
+        index %= size + 1;
+        if (size == 0) { index = 0; }
+        if (index == size) {
             add(value);
             return;
         }
-
         Node* newNode = new Node(value);
-
         if (index == 0) {
-            newNode->next = tail->next;
-            tail->next = newNode;
+            if (size == 0) {
+                tail = newNode;
+                newNode->next = newNode;
+            }
+            else {
+                newNode->next = tail->next;
+                tail->next = newNode;
+            }
         }
         else {
-            Node* prevNode = getNode(index - 1);
-            newNode->next = prevNode->next;
-            prevNode->next = newNode;
-            if (prevNode == tail) {
+            Node* previous = getNode(index - 1);
+            newNode->next = previous->next;
+            previous->next = newNode;
+            if (index == 0 && size != 0) {
                 tail = newNode;
             }
         }
-
         size++;
+        currentIndex = index;
+        currentNode = newNode;
     }
 
     void removeAt(int index) {
-        if (size == 0) return;
+        if (tail == nullptr) return;
+
+        index = index % size;
+
+        if (size == 1) {
+            delete tail;
+            currentNode = nullptr;
+            currentIndex = 0;
+            tail = nullptr;
+            size = 0;
+            return;
+        }
+
+        Node* temp = nullptr;
 
         if (index == 0) {
-            Node* toDelete = tail->next;
-            if (size == 1) {
-                tail = nullptr;
+            temp = tail->next;
+            if (currentNode == temp) {
+                currentNode = temp->next;
+                currentIndex++;
             }
-            else {
-                tail->next = toDelete->next;
-            }
-            delete toDelete;
+            tail->next = temp->next;
+            delete temp;
+            size--;
+            return;
         }
-        else {
-            Node* prevNode = getNode(index - 1);
-            Node* toDelete = prevNode->next;
-            prevNode->next = toDelete->next;
-            if (toDelete == tail) {
-                tail = prevNode;
-            }
-            delete toDelete;
+
+        Node* prev = getNode(index - 1);
+        temp = prev->next;
+        prev->next = temp->next;
+        if (temp == tail) {
+            tail = prev;
         }
+        delete temp;
         size--;
     }
 
+    int elementAt(int index) {
+        index = index % size;
 
-    void insertBeforeNegative() {
-        if (size == 0) return;
-
-        Node* current = (lastAccessNode != nullptr && lastAccessNode->data < 0) ? lastAccessNode : tail->next;
-        Node* prev = tail;
-        int currentIndex = (lastAccessNode != nullptr && lastAccessNode->data < 0) ? lastAccessIndex : 0;
-
-        do {
-            if (current->data < 0) {
-                Node* newNode = new Node(1);
-                newNode->next = current;
-                prev->next = newNode;
-                if (current == tail->next) {
-                    tail->next = newNode;
-                }
-                size++;
-                lastAccessNode = newNode;
-                lastAccessIndex = currentIndex;
+        if (index == currentIndex) {
+            return currentNode->data;
+        }
+        else {
+            Node* node = getNode(index);
+            if (node == nullptr) {
+                return -1;
             }
-            prev = current;
-            current = current->next;
-            currentIndex++;
-        } while (current != tail->next);
-    }
-
-    void removeNegative() {
-        if (size == 0) return;
-
-        Node* current = (lastAccessNode != nullptr) ? lastAccessNode : tail->next;
-        Node* prev = (lastAccessNode != nullptr) ? getNode(lastAccessIndex - 1) : tail;
-        int currentIndex = (lastAccessNode != nullptr) ? lastAccessIndex : 0;
-
-        do {
-            if (current->data < 0) {
-                Node* toDelete = current;
-                prev->next = current->next;
-                if (current == tail) {
-                    tail = prev;
-                }
-                delete toDelete;
-                current = prev->next;
-                size--;
-                if (size == 0) break;
-            }
-            else {
-                prev = current;
-                current = current->next;
-            }
-            currentIndex++;
-            if (currentIndex >= size) currentIndex = 0;
-        } while (current != tail);
-
-        lastAccessNode = nullptr; // Сбрасываем, так как список изменился
-        lastAccessIndex = 0;
-    }
-
-
-    int count(int value) {
-        int count = 0;
-        Node* current = tail;
-        do {
-            if (current->data == value) {
-                count++;
-            }
-            current = current->next;
-        } while (current != tail);
-        return count;
+            return node->data;
+        }
     }
 
     int count() {
         return size;
     }
 
-    int elementAt(int index) {
-        if (size == 0) return 0;
-        Node* current = getNode(index);
-        return current->data;
+    void insertBeforeNegative() {
+        if (tail == nullptr) return;
+        Node* curr = tail->next;
+        Node* prev = tail;
+        int index = 0;
+
+        do {
+            if (curr->data < 0) {
+                Node* newNode = new Node(1);
+                if (curr == tail->next) {
+                    newNode->next = tail->next;
+                    tail->next = newNode;
+                }
+                else {
+                    newNode->next = curr;
+                    prev->next = newNode;
+                }
+                size++;
+                if (index == currentIndex) {
+                    currentNode = newNode;
+                }
+                else if (index < currentIndex) {
+                    currentIndex++;
+                }
+            }
+            prev = curr;
+            curr = curr->next;
+            index++;
+        } while (curr != tail->next);
+    }
+
+    void removeNegative() {
+        if (tail == nullptr) return;
+
+        Node* curr = tail->next;
+        Node* prev = tail;
+        int index = 0;
+
+        while (curr != tail) {
+            if (curr->data < 0) {
+                if (curr == currentNode) {
+                    currentNode = prev;
+                    currentIndex = index - 1;
+                }
+                else if (index < currentIndex) {
+                    currentIndex--;
+                }
+                prev->next = curr->next;
+                delete curr;
+                curr = prev->next;
+                size--;
+            }
+            else {
+                prev = curr;
+                curr = curr->next;
+            }
+            index++;
+        }
+
+        if (tail->data < 0 && tail != nullptr) {
+            if (currentNode == tail) {
+                currentNode = prev;
+                currentIndex = index - 1;
+            }
+            prev->next = tail->next;
+            delete tail;
+            tail = prev;
+            size--;
+        }
+        if (tail == nullptr) {
+            currentNode = nullptr;
+            currentIndex = 0;
+        }
+    }
+
+    int count(int value) {
+        Node* curr = tail->next;
+        int k = 0;
+        for (int i = 0; i < size; i++) {
+            if (curr->data == value) {
+                k++;
+            }
+            curr = curr->next;
+        }
+        return k;
     }
 
     void clear() {
-        if (size == 0) return;
-
-        Node* current = tail->next;
-        while (current != tail) {
-            Node* next = current->next;
-            delete current;
-            current = next;
+        if (tail == nullptr) return;
+        Node* curr = tail->next;
+        Node* temp = nullptr;
+        for (int i = 0; i < size; i++) {
+            temp = curr;
+            curr = curr->next;
+            delete temp;
         }
-        delete tail;
         tail = nullptr;
-        lastAccessNode = nullptr;
         size = 0;
+        currentNode = nullptr;
+        currentIndex = 0;
     }
 };
 
