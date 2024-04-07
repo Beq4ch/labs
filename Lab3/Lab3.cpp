@@ -22,8 +22,6 @@ private:
     int currentIndex;
 
     Node* getNode(int index) {
-        if (index < 0) return nullptr;
-
         if (index < currentIndex) {
             currentIndex = 0;
             currentNode = nullptr;
@@ -134,18 +132,14 @@ public:
     }
 
     int elementAt(int index) {
+        if (tail == nullptr) return -1;
         index = index % size;
 
-        if (index == currentIndex) {
-            return currentNode->data;
+        Node* node = getNode(index);
+        if (node == nullptr) {
+            return -1;
         }
-        else {
-            Node* node = getNode(index);
-            if (node == nullptr) {
-                return -1;
-            }
-            return node->data;
-        }
+        return node->data;
     }
 
     int count() {
