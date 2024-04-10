@@ -60,6 +60,8 @@ public:
             tail = newNode;
         }
         size++;
+        currentIndex = 0;
+        currentNode = nullptr;
     }
 
     void insert(int index, int value) {
