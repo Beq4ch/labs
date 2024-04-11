@@ -180,7 +180,7 @@ public:
     }
 
     void removeNegative() {
-        if (tail == nullptr) return;
+        if (size == 0) return;
 
         Node* curr = tail->next;
         Node* prev = tail;
@@ -207,7 +207,7 @@ public:
             index++;
         }
 
-        if (tail->data < 0 && tail != nullptr) {
+        if (tail->data < 0) {
             if (currentNode == tail) {
                 currentNode = prev;
                 currentIndex = index - 1;
@@ -217,7 +217,8 @@ public:
             tail = prev;
             size--;
         }
-        if (tail == nullptr) {
+        if (size == 0) {
+            tail == nullptr;
             currentNode = nullptr;
             currentIndex = 0;
         }
