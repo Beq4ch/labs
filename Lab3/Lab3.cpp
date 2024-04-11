@@ -225,8 +225,9 @@ public:
     }
 
     int count(int value) {
-        Node* curr = tail->next;
         int k = 0;
+        if (tail == nullptr) return k;
+        Node* curr = tail->next;
         for (int i = 0; i < size; i++) {
             if (curr->data == value) {
                 k++;
