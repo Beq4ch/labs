@@ -280,7 +280,7 @@ int main()
             cout << list.elementAt(index) << endl;
         }
         else if (choice == "count") {
-            list.count();
+            cout << list.count() << endl;
         }
         else if (choice == "insertBeforeNegative") {
             list.insertBeforeNegative();
