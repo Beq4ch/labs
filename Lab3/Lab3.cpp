@@ -180,7 +180,7 @@ public:
     }
 
     void removeNegative() {
-        if (size == 0) return;
+        if (tail == nullptr) return;
 
         Node* curr = tail->next;
         Node* prev = tail;
@@ -207,7 +207,7 @@ public:
             index++;
         }
 
-        if (tail->data < 0) {
+        if (tail->data < 0 && tail != nullptr) {
             if (currentNode == tail) {
                 currentNode = prev;
                 currentIndex = index - 1;
@@ -217,17 +217,15 @@ public:
             tail = prev;
             size--;
         }
-        if (size == 0) {
-            tail == nullptr;
+        if (tail == nullptr) {
             currentNode = nullptr;
             currentIndex = 0;
         }
     }
 
     int count(int value) {
-        int k = 0;
-        if (tail == nullptr) return k;
         Node* curr = tail->next;
+        int k = 0;
         for (int i = 0; i < size; i++) {
             if (curr->data == value) {
                 k++;
@@ -280,7 +278,7 @@ int main()
             cout << list.elementAt(index) << endl;
         }
         else if (choice == "count") {
-            cout << list.count() << endl;
+            list.count();
         }
         else if (choice == "insertBeforeNegative") {
             list.insertBeforeNegative();
