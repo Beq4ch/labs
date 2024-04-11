@@ -218,7 +218,7 @@ public:
             size--;
         }
         if (size == 0) {
-            tail == nullptr;
+            tail = nullptr;
             currentNode = nullptr;
             currentIndex = 0;
         }
