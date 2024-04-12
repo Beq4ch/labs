@@ -85,7 +85,7 @@ public:
         return current->data;
     }
 
-    int count (){
+    int count() {
         return size;
     }
 
