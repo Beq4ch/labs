@@ -73,22 +73,13 @@ public:
         }
         Node* newNode = new Node(value);
         if (index == 0) {
-            if (size == 0) {
-                tail = newNode;
-                newNode->next = newNode;
-            }
-            else {
-                newNode->next = tail->next;
-                tail->next = newNode;
-            }
+            newNode->next = tail->next;
+            tail->next = newNode;
         }
         else {
             Node* previous = getNode(index - 1);
             newNode->next = previous->next;
             previous->next = newNode;
-            if (index == 0 && size != 0) {
-                tail = newNode;
-            }
         }
         size++;
         currentIndex = index;

@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#include <windows.h> // Подключение библиотеки для работы с консолью
+#include <windows.h>
 #include <string>
 using namespace std;
 
@@ -10,7 +10,14 @@ struct City {
     string name;
     string region;
     int population;
+
+    City(string city, string nameRegion, int populationK) {
+        name = city;
+        region = nameRegion;
+        population = populationK;
+    }
 };
+
 
 template <typename T>
 class List {
@@ -32,20 +39,22 @@ private:
     int currentIndex;
 
     Node* getNode(int index) {
-        if (index == currentIndex + 1 && currentNode && currentNode->next) {
-            currentNode = currentNode->next;
-            currentIndex++;
-            return currentNode;
-        }
-        else if (index == currentIndex - 1 && currentNode && currentNode->prev) {
-            currentNode = currentNode->prev;
-            currentIndex--;
+        if (index == currentIndex) {
             return currentNode;
         }
 
-        Node* current = head;
-        for (int i = 0; i < index; ++i) {
-            current = current->next;
+        Node* current;
+        if (index < size / 2) {
+            current = head;
+            for (int i = 0; i < index; i++) {
+                current = current->next;
+            }
+        }
+        else {
+            current = tail;
+            for (int i = size - 1; i > index; i--) {
+                current = current->prev;
+            }
         }
         currentNode = current;
         currentIndex = index;
@@ -60,15 +69,37 @@ public:
 
     void add(T data) {
         Node* newNode = new Node(data);
-        if (tail) {
+        if (head == nullptr) {
+            head = newNode;
+        }
+        else {
             tail->next = newNode;
             newNode->prev = tail;
         }
-        else {
-            head = newNode;
-        }
         tail = newNode;
         size++;
+    }
+
+    void insert(int index, T data) {
+        if (index < 0 || index >= size) {
+            return;
+        }
+
+        if (index == size) {
+            add(data);
+            return;
+        }
+
+        Node* newNode = new Node(data);
+        if (index == 0) {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+        else {
+            Node* curr = getNode(index);
+
+        }
     }
 
     T elementAt(int index) {
@@ -98,17 +129,17 @@ public:
         }
         head = tail = nullptr;
         size = 0;
-        lastAccessedNode = nullptr;
-        lastAccessedIndex = 0;
+    }
+
+    void printList() {
+        Node* current = head;
+        while (current != nullptr) {
+            cout << current->data.name << " (" << current->data.region << ", " << current->data.population << ")" << endl;
+            current = current->next;
+        }
+        cout << endl;
     }
 };
-
-void printCities(List<City> cityList) {
-    for (int i = 0; i < cityList.count(); ++i) {
-        City city = cityList.elementAt(i);
-        cout << "Город: " << city.name << ", Регион: " << city.region << ", Население: " << city.population << endl;
-    }
-}
 
 int main()
 {
@@ -118,23 +149,24 @@ int main()
     SetConsoleOutputCP(1251); // Установка кодировки консоли для вывода
 
     // Заполнение списка городов с клавиатуры
-    int numCities;
+    int numCities, population;
+    string name, region;
     cout << "Введите количество городов: ";
     cin >> numCities;
 
     for (int i = 0; i < numCities; ++i) {
-        City city;
         cout << "Город " << i + 1 << ":" << endl;
         cout << "Название: ";
-        cin >> city.name;
+        cin >> name;
         cout << "Регион: ";
-        cin >> city.region;
+        cin >> region;
         cout << "Население: ";
-        cin >> city.population;
-        cityList.add(city);
+        cin >> population;
+        cityList.add(City(name, region, population));
     }
 
     // Вывод списка городов
     cout << "\nСписок городов:" << endl;
-    printCities(cityList);
+    cityList.printList();
 }
+
