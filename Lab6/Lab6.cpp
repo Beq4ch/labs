@@ -94,6 +94,51 @@ public:
         return false;
     }
 
+    void removeHelper(Node*& node, int value) {
+        if (!node) return;  // Узел не найден
+
+        if (value < node->data) {
+            removeHelper(node->left, value);
+        }
+        else if (value > node->data) {
+            removeHelper(node->right, value);
+        }
+        else {  // Найден узел, который нужно удалить
+            if (!node->left && !node->right) {  // Узел является листом
+                delete node;
+                node = nullptr;
+                size--;
+            }
+            else if (node->left && !node->right) {  // Узел имеет только левого ребенка
+                Node* temp = node;
+                node = node->left;
+                delete temp;
+                size--;
+            }
+            else if (!node->left && node->right) {  // Узел имеет только правого ребенка
+                Node* temp = node;
+                node = node->right;
+                delete temp;
+                size--;
+            }
+            else {  // Узел имеет двух детей
+                Node* minNode = node->right;
+                Node* parentOfMinNode = node;
+                while (minNode->left) {  // Находим минимальный узел в правом поддереве
+                    parentOfMinNode = minNode;
+                    minNode = minNode->left;
+                }
+                node->data = minNode->data;  // Заменяем данные узла на минимальные из правого поддерева
+                removeHelper(parentOfMinNode->left ? parentOfMinNode->left : parentOfMinNode->right, minNode->data);  // Удаляем минимальный узел
+            }
+        }
+    }
+
+    void remove(int value) {
+        removeHelper(root, value);
+    }
+
+
     int count() {
         return size;
     }
@@ -129,6 +174,10 @@ int main()
         if (choice == "add") {
             cin >> data;
             t.add(data);
+        }
+        if (choice == "remove") {
+            cin >> data;
+            t.remove(data);
         }
         else if (choice == "print") {
             t.print();
