@@ -184,7 +184,7 @@ int main()
             cin >> data;
             t.add(data);
         }
-        if (choice == "remove") {
+        else if (choice == "remove") {
             cin >> data;
             t.remove(data);
         }
