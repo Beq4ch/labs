@@ -124,15 +124,24 @@ public:
             else {  // Узел имеет двух детей
                 Node* minNode = node->right;
                 Node* parentOfMinNode = node;
-                while (minNode->left) {  // Находим минимальный узел в правом поддереве
-                    parentOfMinNode = minNode;
-                    minNode = minNode->left;
+                if (!minNode->left) {  // Минимальный узел находится непосредственно справа
+                    node->data = minNode->data;
+                    node->right = minNode->right;  // Подвесим правое поддерево минимального узла к текущему узлу
+                    delete minNode;
                 }
-                node->data = minNode->data;  // Заменяем данные узла на минимальные из правого поддерева
-                removeHelper(parentOfMinNode->left ? parentOfMinNode->left : parentOfMinNode->right, minNode->data);  // Удаляем минимальный узел
+                else {
+                    while (minNode->left) {  // Находим минимальный узел в правом поддереве
+                        parentOfMinNode = minNode;
+                        minNode = minNode->left;
+                    }
+                    node->data = minNode->data;  // Заменяем данные узла на минимальные из правого поддерева
+                    removeHelper(parentOfMinNode->left, minNode->data);  // Удаляем минимальный узел
+                }
+                size--;
             }
         }
     }
+
 
     void remove(int value) {
         removeHelper(root, value);
