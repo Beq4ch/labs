@@ -40,6 +40,12 @@ private:
     int currentIndex;
 
     Node* getNode(int index) {
+        if (index < 0 || index >= size) {
+            return nullptr;
+        }
+        if (index == 0) return head;
+        if (index == size - 1) return tail;
+
         // Оптимизация: если запрашиваемый индекс близок к последнему 
         // использованному, идём от currentNode
         if (currentNode != nullptr && abs(index - currentIndex) < size / 2) {
@@ -190,11 +196,7 @@ public:
 
     void swappedAt(int index, T data) {
         Node* curr = getNode(index);
-        if (curr != nullptr) {
-            curr->data = data;
-            currentNode = curr;
-            currentIndex = index;
-        }
+        curr->data = data;
     }
 
     void clear() {

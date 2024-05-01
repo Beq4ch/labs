@@ -1,6 +1,4 @@
-﻿// LabTest.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
-
+﻿
 #include <iostream>
 using namespace std;
 
@@ -228,6 +226,16 @@ public:
         return k;
     }
 
+    int sum() {
+        int k = 0;
+        Node* curr = tail->next;
+        for (int i = 0; i < size; i++) {
+            k += curr->data;
+            curr = curr->next;
+        }
+        return k;
+    }
+
     void clear() {
         if (tail == nullptr) return;
         Node* curr = tail->next;
@@ -282,6 +290,9 @@ int main()
         else if (choice == "countData") {
             cin >> data;
             cout << list.count(data) << endl;
+        }
+        else if (choice == "sum") {
+            cout << list.sum();
         }
         else if (choice == "clear") {
             list.clear();
