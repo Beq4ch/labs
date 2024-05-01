@@ -207,14 +207,15 @@ public:
         head = tail = nullptr;
         size = 0;
     }
-
-    void printList() {
-        for (int i = 0; i < size; i++) {
-            City info = elementAt(i);
-            cout << info.name << " (" << info.region << ", " << info.population << ")" << endl;
-        }
-    }
 };
+
+template <typename T>
+void printList(List<T>& list) {
+    for (int i = 0; i < list.count(); i++) {
+        T info = list.elementAt(i);
+        cout << info.name << " (" << info.region << ", " << info.population << ")" << endl;
+    }
+}
 
 void removeCitiesFromRegion(string regionName, List<City> &list) {
     int i = 0;
@@ -308,6 +309,9 @@ int main()
         }
         else if (choice == "printRegionPopulation") {
             printRegionPopulation(cityList);
+        }
+        else if (choice == "print") {
+            printList(cityList);
         }
         else if (choice == "clear") {
             cityList.clear();
