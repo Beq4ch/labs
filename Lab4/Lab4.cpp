@@ -143,23 +143,26 @@ public:
         Node* temp = nullptr;
         if (index == 0) {
             temp = head;
+            if (!temp) return;
             head = head->next;
             if (head) {
                 head->prev = nullptr;
             }
             else {
-                tail = nullptr;
+                tail = currentNode = nullptr;
+                currentIndex = 0;
             }
-        }
-        else if (index == size - 1) {
-            temp = tail;
-            tail = tail->prev;
-            tail->next = nullptr;
         }
         else {
             temp = getNode(index);
-            temp->prev->next = temp->next;
-            temp->next->prev = temp->prev;
+            if (temp == tail) {
+                tail = tail->prev;
+                tail->next = nullptr;
+            }
+            else {
+                temp->prev->next = temp->next;
+                temp->next->prev = temp->prev;
+            }
         }
 
         if (temp == currentNode) {
@@ -172,10 +175,6 @@ public:
 
         delete temp;
         size--;
-        if (size == 0) {
-            head = tail = currentNode = nullptr;
-            currentIndex = 0;
-        }
     }
 
     T elementAt(int index) {
@@ -211,10 +210,9 @@ public:
     }
 };
 
-template <typename T>
-void printList(List<T>& list) {
+void printList(List<City> list) {
     for (int i = 0; i < list.count(); i++) {
-        T info = list.elementAt(i);
+        City info = list.elementAt(i);
         cout << info.name << " (" << info.region << ", " << info.population << ")" << endl;
     }
 }

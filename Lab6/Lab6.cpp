@@ -137,7 +137,6 @@ public:
                     node->data = minNode->data;  // Заменяем данные узла на минимальные из правого поддерева
                     removeHelper(parentOfMinNode->left, minNode->data);  // Удаляем минимальный узел
                 }
-                size--;
             }
         }
     }
