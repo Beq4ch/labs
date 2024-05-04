@@ -2,7 +2,6 @@
 //
 
 #include <iostream>
-#include <windows.h>
 #include <string>
 using namespace std;
 
@@ -139,13 +138,12 @@ public:
         if (index < 0 || index >= size) {
             return;
         }
-        
+
         Node* temp = nullptr;
         if (index == 0) {
             temp = head;
-            if (!temp) return;
             head = head->next;
-            if (head) {
+            if (head != nullptr) {
                 head->prev = nullptr;
             }
             else {
@@ -153,16 +151,15 @@ public:
                 currentIndex = 0;
             }
         }
+        else if (index == size - 1) {
+            temp = tail;
+            tail = tail->prev;
+            tail->next = nullptr;
+        }
         else {
             temp = getNode(index);
-            if (temp == tail) {
-                tail = tail->prev;
-                tail->next = nullptr;
-            }
-            else {
-                temp->prev->next = temp->next;
-                temp->next->prev = temp->prev;
-            }
+            temp->prev->next = temp->next;
+            temp->next->prev = temp->prev;
         }
 
         if (temp == currentNode) {
