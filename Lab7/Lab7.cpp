@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 using namespace std;
 
-enum Order { Prefix, Infix, Postfix, LevelsUpLeft, LevelsUpRight, LevelsDownLeft, LevelsDownRight };
+enum Order { Prefix, Infix, Postfix };
 
 class Tree {
 private:

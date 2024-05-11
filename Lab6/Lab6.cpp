@@ -22,13 +22,6 @@ private:
     int size;
     Node* root;
 
-    void printHelper(Node* node) {
-        if (node != nullptr) {
-            printHelper(node->left);
-            cout << node->data << " ";
-            printHelper(node->right);
-        }
-    }
 public:
 
     Tree() {
@@ -163,11 +156,6 @@ public:
         root = nullptr;
         size = 0;
     }
-
-    void print() {
-        printHelper(root);
-        cout << endl;
-    }
 };
 
 int main()
@@ -186,9 +174,6 @@ int main()
         else if (choice == "remove") {
             cin >> data;
             t.remove(data);
-        }
-        else if (choice == "print") {
-            t.print();
         }
         else if (choice == "clear") {
             t.clear();
