@@ -154,16 +154,27 @@ public:
         else if (index == size - 1) {
             temp = tail;
             tail = tail->prev;
-            tail->next = nullptr;
+            if (tail != nullptr) {
+                tail->next = nullptr;
+            }
+            else {
+                head = nullptr;
+            }
         }
         else {
             temp = getNode(index);
-            temp->prev->next = temp->next;
-            temp->next->prev = temp->prev;
+            if (temp != nullptr) {
+                if (temp->prev != nullptr) {
+                    temp->prev->next = temp->next;
+                }
+                if (temp->next != nullptr) {
+                    temp->next->prev = temp->prev;
+                }
+            }
         }
 
         if (temp == currentNode) {
-            currentNode = temp->prev;
+            currentNode = temp != nullptr ? temp->prev : nullptr;
             currentIndex = max(0, index - 1);
         }
         else if (index < currentIndex) {

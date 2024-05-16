@@ -179,7 +179,7 @@ int main()
             t.clear();
         }
         else if (choice == "count") {
-            t.count();
+            cout << t.count() << endl;
         }
         else if (choice == "stop") {
             break;
