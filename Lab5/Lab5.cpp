@@ -1,6 +1,5 @@
 ﻿#include "List.h"
 #include <iostream>
-#include <windows.h>
 using namespace std;
 
 class HashSet {
@@ -12,7 +11,7 @@ private:
     int hash(string key) const {
         unsigned long hash = 5381;
         for (char c : key) {
-            hash = ((hash << 5) + hash) + c; // hash * 33 + c
+            hash = hash * 33 + c;
         }
         return hash % TABLE_SIZE;
     }
@@ -95,5 +94,40 @@ public:
 
 int main() {
 
+    SetConsoleCP(1251); // Установка кодировки консоли для ввода
+    SetConsoleOutputCP(1251); // Установка кодировки консоли для вывода
+
+    HashSet hashSet;
+
+    // Добавляем элементы
+    hashSet.add("apple");
+    hashSet.add("banana");
+    hashSet.add("cherry");
+    hashSet.add("date");
+    hashSet.add("fig");
+
+    // Печатаем количество элементов
+    cout << "Количество элементов после добавления: " << hashSet.count() << endl;
+
+    // Проверяем наличие элемента
+    string searchKey = "banana";
+    cout << "Содержит '" << searchKey << "': " << (hashSet.contains(searchKey) ? "Да" : "Нет") << endl;
+
+    // Удаляем элемент
+    hashSet.remove("banana");
+    cout << "Количество элементов после удаления 'banana': " << hashSet.count() << endl;
+    cout << "Содержит 'banana' после удаления: " << (hashSet.contains("banana") ? "Да" : "Нет") << endl;
+
+    // Проверяем toArray
+    string* array = hashSet.ToArray();
+    cout << "Элементы в HashSet:" << endl;
+    for (int i = 0; i < hashSet.count(); ++i) {
+        cout << array[i] << endl;
+    }
+    delete[] array; // Не забываем освободить выделенную память
+
+    // Очищаем HashSet
+    hashSet.clear();
+    cout << "Количество элементов после очистки: " << hashSet.count() << endl;
 
 }
