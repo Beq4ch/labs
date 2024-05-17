@@ -9,7 +9,7 @@ private:
 
     // Хеш-функция
     int hash(string key) const {
-        unsigned long hash = 5381;
+        int hash = 5381;
         for (char c : key) {
             hash = hash * 33 + c;
         }
