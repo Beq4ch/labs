@@ -59,6 +59,32 @@ private:
         node = leftChild;
     }
 
+    void storeBSTNodes(Node* root, Node** nodes, int& index) {
+        if (root == nullptr) return;
+        storeBSTNodes(root->left, nodes, index);
+        nodes[index++] = root;
+        storeBSTNodes(root->right, nodes, index);
+    }
+
+    Node* buildTreeUtil(Node** nodes, int start, int end) {
+        if (start > end) return nullptr;
+        int mid = (start + end) / 2;
+        Node* node = nodes[mid];
+        node->left = buildTreeUtil(nodes, start, mid - 1);
+        node->right = buildTreeUtil(nodes, mid + 1, end);
+        return node;
+    }
+
+    Node* balanceBST(Node* root) {
+        int nodeCount = countNodes(root);
+        Node** nodes = new Node * [nodeCount];
+        int index = 0;
+        storeBSTNodes(root, nodes, index);
+        Node* balancedRoot = buildTreeUtil(nodes, 0, nodeCount - 1);
+        delete[] nodes;
+        return balancedRoot;
+    }
+
 public:
     Tree() : root(nullptr), size(0) {}
 
@@ -100,47 +126,84 @@ public:
 
     void ToLeft(int value) {
         Node* target = findNode(root, value);
-        if (target && target->right) rotateLeft(target->right);
+        if (target && target->right) rotateLeft(target);
     }
 
     void ToRight(int value) {
         Node* target = findNode(root, value);
-        if (target && target->left) rotateRight(target->left);
+        if (target && target->left) rotateRight(target);
+    }
+
+    void Balance() {
+        root = balanceBST(root);
+    }
+
+    int count() {
+        return size;
+    }
+
+    void clear() {
+        clearNode(root);
+        root = nullptr;
+        size = 0;
     }
 };
 
 int main() {
     Tree t;
-    t.add(8);
-    t.add(3);
-    t.add(10);
-    t.add(1);
-    t.add(6);
-    t.add(14);
-    t.add(4);
-    t.add(7);
-    t.add(13);
+    string choice;
+    int data;
 
-    int* array = t.ToArray(Infix);
-    cout << "Infix order: ";
-    for (int i = 0; i < 9; i++) {
-        cout << array[i] << " ";
+    while (true) {
+        cin >> choice;
+        if (choice == "add") {
+            cin >> data;
+            t.add(data);
+        }
+        else if (choice == "clear") {
+            t.clear();
+        }
+        else if (choice == "count") {
+            cout << t.count() << endl;
+        }
+        else if (choice == "toleft") {
+            cin >> data;
+            t.ToLeft(data);
+        }
+        else if (choice == "toright") {
+            cin >> data;
+            t.ToRight(data);
+        }
+        else if (choice == "balance") {
+            t.Balance();
+        }
+        else if (choice == "toarray") {
+            string order;
+            cin >> order;
+            int* array = nullptr;
+            int size = t.count();
+            if (order == "infix") {
+                array = t.ToArray(Infix);
+            } else if (order == "prefix") {
+                array = t.ToArray(Prefix);
+            } else if (order == "postfix") {
+                array = t.ToArray(Postfix);
+            }
+            if (array != nullptr) {
+                for (int i = 0; i < size; i++) {
+                    cout << array[i] << " ";
+                }
+                cout << endl;
+                delete[] array; // Clear memory
+            }
+        }
+        else if (choice == "stop") {
+            break;
+        }
+        else {
+            break;
+        }
     }
-    cout << endl;
-
-    delete[] array; // Clear memory
-
-    t.ToLeft(3);
-    t.ToRight(10);
-
-    array = t.ToArray(Infix);
-    cout << "After rotations: ";
-    for (int i = 0; i < 9; i++) {
-        cout << array[i] << " ";
-    }
-    cout << endl;
-
-    delete[] array; // Clear memory
 
     return 0;
 }
