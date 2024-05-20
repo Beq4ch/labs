@@ -22,11 +22,11 @@ private:
 
     void toArrayHelper(Node* node, int*& array, int& index, Order order) {
         if (!node) return;
-        if (order == Prefix) array[index++] = node->data;
+        if (order == Order::Prefix) array[index++] = node->data;
         toArrayHelper(node->left, array, index, order);
-        if (order == Infix) array[index++] = node->data;
+        if (order == Order::Infix) array[index++] = node->data;
         toArrayHelper(node->right, array, index, order);
-        if (order == Postfix) array[index++] = node->data;
+        if (order == Order::Postfix) array[index++] = node->data;
     }
 
     Node* rotateLeft(Node* node) {
@@ -82,7 +82,6 @@ private:
     }
 
 public:
-
     Tree() {
         size = 0;
         root = nullptr;
@@ -222,7 +221,7 @@ public:
     }
 
     int* ToArray() {
-        return ToArray(Infix);
+        return ToArray(Order::Infix);
     }
 
     void ToLeft(int value) {
@@ -289,9 +288,9 @@ int main() {
         else if (choice == "toarray") {
             string orderStr;
             cin >> orderStr;
-            Order order = Infix;
-            if (orderStr == "prefix") order = Prefix;
-            else if (orderStr == "postfix") order = Postfix;
+            Order order = Order::Infix;
+            if (orderStr == "prefix") order = Order::Prefix;
+            else if (orderStr == "postfix") order = Order::Postfix;
             int* arr = t.ToArray(order);
             for (int i = 0; i < t.count(); i++) {
                 cout << arr[i] << " ";
