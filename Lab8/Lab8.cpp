@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include "List.h"
 using namespace std;
 
 struct Node {
@@ -22,31 +23,83 @@ private:
 
     void toArrayHelper(Node* node, int*& array, int& index, Order order) {
         if (!node) return;
-        if (order == Prefix) array[index++] = node->data;
+        if (order == Order::Prefix) array[index++] = node->data;
         toArrayHelper(node->left, array, index, order);
-        if (order == Infix) array[index++] = node->data;
+        if (order == Order::Infix) array[index++] = node->data;
         toArrayHelper(node->right, array, index, order);
-        if (order == Postfix) array[index++] = node->data;
+        if (order == Order::Postfix) array[index++] = node->data;
     }
 
-    int height(Node* node) {
-        if (!node) return 0;
-        return max(height(node->left), height(node->right)) + 1;
-    }
+    void levelsUpLeftTraversal(Node* node, int* array) {
+        if (node == nullptr) return;
 
-    void addLevelNodes(Node* node, int level, int*& array, int& index, bool reverse) {
-        if (!node) return;
-        if (level == 0) {
-            array[index++] = node->data;
+        List<Node*> queue;
+        queue.add(node);
+        int index = 0;
+
+        while (queue.count() > 0) {
+            Node* current = queue.elementAt(0);
+            queue.removeAt(0);                  
+            array[index++] = current->data;     
+
+            if (current->left != nullptr) queue.add(current->left);
+            if (current->right != nullptr) queue.add(current->right);
         }
-        else {
-            if (reverse) {
-                addLevelNodes(node->right, level - 1, array, index, reverse);
-                addLevelNodes(node->left, level - 1, array, index, reverse);
+    }
+
+    void levelsUpRightTraversal(Node* node, int* array) {
+        if (node == nullptr) return;
+
+        List<Node*> queue;
+        queue.add(node);
+        int index = 0;
+
+        while (queue.count() > 0) {
+            Node* current = queue.elementAt(0);
+            queue.removeAt(0);
+            array[index++] = current->data;
+
+            if (current->right != nullptr) queue.add(current->right);
+            if (current->left != nullptr) queue.add(current->left);
+        }
+    }
+
+    void levelsDownRightTraversal(Node* node, int* array) {
+        if (node == nullptr) return;
+
+        List<Node*> queue;
+        queue.add(node);
+
+        int index = size - 1;
+
+        while (queue.count() > 0) {
+            int levelSize = queue.count();
+            for (int i = 0; i < levelSize; ++i) {
+                Node* current = queue.elementAt(0);
+                queue.removeAt(0);
+                array[index--] = current->data;
+                if (current->left != nullptr) queue.add(current->left);
+                if (current->right != nullptr) queue.add(current->right);
             }
-            else {
-                addLevelNodes(node->left, level - 1, array, index, reverse);
-                addLevelNodes(node->right, level - 1, array, index, reverse);
+        }
+    }
+
+    void levelsDownLeftTraversal(Node* node, int* array) {
+        if (node == nullptr) return;
+
+        List<Node*> queue;
+        queue.add(node);
+
+        int index = size - 1;
+
+        while (queue.count() > 0) {
+            int levelSize = queue.count();
+            for (int i = 0; i < levelSize; ++i) {
+                Node* current = queue.elementAt(0);
+                queue.removeAt(0);
+                array[index--] = current->data;
+                if (current->right != nullptr) queue.add(current->right);
+                if (current->left != nullptr) queue.add(current->left);
             }
         }
     }
@@ -168,7 +221,7 @@ public:
     }
 
     void removeHelper(Node*& node, int value) {
-        if (!node) return;
+        if (!node) return;  // Узел не найден
 
         if (value < node->data) {
             removeHelper(node->left, value);
@@ -176,39 +229,39 @@ public:
         else if (value > node->data) {
             removeHelper(node->right, value);
         }
-        else {
-            if (!node->left && !node->right) {
+        else {  // Найден узел, который нужно удалить
+            if (!node->left && !node->right) {  // Узел является листом
                 delete node;
                 node = nullptr;
                 size--;
             }
-            else if (node->left && !node->right) {
+            else if (node->left && !node->right) {  // Узел имеет только левого ребенка
                 Node* temp = node;
                 node = node->left;
                 delete temp;
                 size--;
             }
-            else if (!node->left && node->right) {
+            else if (!node->left && node->right) {  // Узел имеет только правого ребенка
                 Node* temp = node;
                 node = node->right;
                 delete temp;
                 size--;
             }
-            else {
+            else {  // Узел имеет двух детей
                 Node* minNode = node->right;
                 Node* parentOfMinNode = node;
-                if (!minNode->left) {
+                if (!minNode->left) {  // Минимальный узел находится непосредственно справа
                     node->data = minNode->data;
-                    node->right = minNode->right;
+                    node->right = minNode->right;  // Подвесим правое поддерево минимального узла к текущему узлу
                     delete minNode;
                 }
                 else {
-                    while (minNode->left) {
+                    while (minNode->left) {  // Находим минимальный узел в правом поддереве
                         parentOfMinNode = minNode;
                         minNode = minNode->left;
                     }
-                    node->data = minNode->data;
-                    removeHelper(parentOfMinNode->left, minNode->data);
+                    node->data = minNode->data;  // Заменяем данные узла на минимальные из правого поддерева
+                    removeHelper(parentOfMinNode->left, minNode->data);  // Удаляем минимальный узел
                 }
             }
         }
@@ -238,29 +291,34 @@ public:
     int* ToArray(Order order) {
         int* array = new int[size];
         int index = 0;
-
-        if (order == LevelsUpLeft || order == LevelsUpRight || order == LevelsDownLeft || order == LevelsDownRight) {
-            int treeHeight = height(root);
-            if (order == LevelsUpLeft || order == LevelsUpRight) {
-                for (int level = 0; level < treeHeight; ++level) {
-                    addLevelNodes(root, level, array, index, order == LevelsUpRight);
-                }
-            }
-            else if (order == LevelsDownLeft || order == LevelsDownRight) {
-                for (int level = treeHeight - 1; level >= 0; --level) {
-                    addLevelNodes(root, level, array, index, order == LevelsDownRight);
-                }
-            }
-        }
-        else {
+        switch (order) {
+        case Prefix:
             toArrayHelper(root, array, index, order);
+            break;
+        case Infix:
+            toArrayHelper(root, array, index, order);
+            break;
+        case Postfix:
+            toArrayHelper(root, array, index, order);
+            break;
+        case LevelsUpLeft:
+            levelsUpLeftTraversal(root, array);
+            break;
+        case LevelsUpRight:
+            levelsUpRightTraversal(root, array);
+            break;
+        case LevelsDownLeft:
+            levelsDownLeftTraversal(root, array);
+            break;
+        case LevelsDownRight:
+            levelsDownRightTraversal(root, array);
+            break;
         }
-
         return array;
     }
 
     int* ToArray() {
-        return ToArray(Infix);
+        return ToArray(Order::Infix);
     }
 
     void ToLeft(int value) {
@@ -327,13 +385,13 @@ int main() {
         else if (choice == "toarray") {
             string orderStr;
             cin >> orderStr;
-            Order order = Infix;
-            if (orderStr == "prefix") order = Prefix;
-            else if (orderStr == "postfix") order = Postfix;
-            else if (orderStr == "levelsupleft") order = LevelsUpLeft;
-            else if (orderStr == "levelsupright") order = LevelsUpRight;
-            else if (orderStr == "levelsdownleft") order = LevelsDownLeft;
-            else if (orderStr == "levelsdownright") order = LevelsDownRight;
+            Order order = Order::Infix;
+            if (orderStr == "prefix") order = Order::Prefix;
+            else if (orderStr == "postfix") order = Order::Postfix;
+            else if (orderStr == "levelsupleft") order = Order::LevelsUpLeft;
+            else if (orderStr == "levelsupright") order = Order::LevelsUpRight;
+            else if (orderStr == "levelsdownleft") order = Order::LevelsDownLeft;
+            else if (orderStr == "levelsdownright") order = Order::LevelsDownRight;
             int* arr = t.ToArray(order);
             for (int i = 0; i < t.count(); i++) {
                 cout << arr[i] << " ";
