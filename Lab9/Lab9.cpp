@@ -65,5 +65,45 @@ public:
 };
 
 int main() {
-    
+    HashTree ht;
+    string choice;
+    int data;
+
+    while (true) {
+        cin >> choice;
+        if (choice == "add") {
+            cin >> data;
+            ht.add(data);
+        }
+        else if (choice == "remove") {
+            cin >> data;
+            ht.remove(data);
+        }
+        else if (choice == "clear") {
+            ht.clear();
+        }
+        else if (choice == "count") {
+            cout << ht.count() << endl;
+        }
+        else if (choice == "contains") {
+            cin >> data;
+            cout << (ht.contains(data) ? "Yes" : "No") << endl;
+        }
+        else if (choice == "toArray") {
+            int* array = ht.ToArray();
+            int count = ht.count();
+            cout << "Elements in HashTree: ";
+            for (int i = 0; i < count; ++i) {
+                cout << array[i] << " ";
+            }
+            cout << endl;
+            delete[] array;
+        }
+        else if (choice == "stop") {
+            break;
+        }
+        else {
+            cout << "Unknown command" << endl;
+        }
+    }
 }
