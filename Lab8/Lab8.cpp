@@ -14,21 +14,10 @@ struct Node {
     }
 };
 
-enum Order { Prefix, Infix, Postfix, LevelsUpLeft, LevelsUpRight, LevelsDownLeft, LevelsDownRight };
-
 class Tree {
 private:
     int size;
     Node* root;
-
-    void toArrayHelper(Node* node, int*& array, int& index, Order order) {
-        if (!node) return;
-        if (order == Order::Prefix) array[index++] = node->data;
-        toArrayHelper(node->left, array, index, order);
-        if (order == Order::Infix) array[index++] = node->data;
-        toArrayHelper(node->right, array, index, order);
-        if (order == Order::Postfix) array[index++] = node->data;
-    }
 
     void levelsUpLeftTraversal(Node* node, int* array) {
         if (node == nullptr) return;
@@ -157,6 +146,8 @@ private:
     }
 
 public:
+    enum Order { Prefix, Infix, Postfix, LevelsUpLeft, LevelsUpRight, LevelsDownLeft, LevelsDownRight };
+
     Tree() {
         size = 0;
         root = nullptr;
@@ -275,6 +266,15 @@ public:
         return size;
     }
 
+    void toArrayHelper(Node* node, int*& array, int& index, Tree::Order order) {
+        if (!node) return;
+        if (order == Order::Prefix) array[index++] = node->data;
+        toArrayHelper(node->left, array, index, order);
+        if (order == Order::Infix) array[index++] = node->data;
+        toArrayHelper(node->right, array, index, order);
+        if (order == Order::Postfix) array[index++] = node->data;
+    }
+
     void clearNode(Node* node) {
         if (!node) return;
         clearNode(node->left);
@@ -385,13 +385,13 @@ int main() {
         else if (choice == "toarray") {
             string orderStr;
             cin >> orderStr;
-            Order order = Order::Infix;
-            if (orderStr == "prefix") order = Order::Prefix;
-            else if (orderStr == "postfix") order = Order::Postfix;
-            else if (orderStr == "levelsupleft") order = Order::LevelsUpLeft;
-            else if (orderStr == "levelsupright") order = Order::LevelsUpRight;
-            else if (orderStr == "levelsdownleft") order = Order::LevelsDownLeft;
-            else if (orderStr == "levelsdownright") order = Order::LevelsDownRight;
+            Tree::Order order = Tree::Infix;
+            if (orderStr == "prefix") order = Tree::Prefix;
+            else if (orderStr == "postfix") order = Tree::Postfix;
+            else if (orderStr == "levelsupleft") order = Tree::LevelsUpLeft;
+            else if (orderStr == "levelsupright") order = Tree::LevelsUpRight;
+            else if (orderStr == "levelsdownleft") order = Tree::LevelsDownLeft;
+            else if (orderStr == "levelsdownright") order = Tree::LevelsDownRight;
             int* arr = t.ToArray(order);
             for (int i = 0; i < t.count(); i++) {
                 cout << arr[i] << " ";

@@ -13,21 +13,10 @@ struct Node {
     }
 };
 
-enum Order { Prefix, Infix, Postfix };
-
 class Tree {
 private:
     int size;
     Node* root;
-
-    void toArrayHelper(Node* node, int*& array, int& index, Order order) {
-        if (!node) return;
-        if (order == Order::Prefix) array[index++] = node->data;
-        toArrayHelper(node->left, array, index, order);
-        if (order == Order::Infix) array[index++] = node->data;
-        toArrayHelper(node->right, array, index, order);
-        if (order == Order::Postfix) array[index++] = node->data;
-    }
 
     Node* rotateLeft(Node* node) {
         Node* newRoot = node->right;
@@ -82,6 +71,9 @@ private:
     }
 
 public:
+
+    enum Order { Prefix, Infix, Postfix };
+
     Tree() {
         size = 0;
         root = nullptr;
@@ -213,6 +205,15 @@ public:
         size = 0;
     }
 
+    void toArrayHelper(Node* node, int*& array, int& index, Order order) {
+        if (!node) return;
+        if (order == Order::Prefix) array[index++] = node->data;
+        toArrayHelper(node->left, array, index, order);
+        if (order == Order::Infix) array[index++] = node->data;
+        toArrayHelper(node->right, array, index, order);
+        if (order == Order::Postfix) array[index++] = node->data;
+    }
+
     int* ToArray(Order order) {
         int* array = new int[size];
         int index = 0;
@@ -288,9 +289,9 @@ int main() {
         else if (choice == "toarray") {
             string orderStr;
             cin >> orderStr;
-            Order order = Order::Infix;
-            if (orderStr == "prefix") order = Order::Prefix;
-            else if (orderStr == "postfix") order = Order::Postfix;
+            Tree::Order order = Tree::Infix;
+            if (orderStr == "prefix") order = Tree::Prefix;
+            else if (orderStr == "postfix") order = Tree::Postfix;
             int* arr = t.ToArray(order);
             for (int i = 0; i < t.count(); i++) {
                 cout << arr[i] << " ";
