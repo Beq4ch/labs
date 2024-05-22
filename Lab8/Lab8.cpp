@@ -268,11 +268,11 @@ public:
 
     void toArrayHelper(Node* node, int*& array, int& index, Tree::Order order) {
         if (!node) return;
-        if (order == Order::Prefix) array[index++] = node->data;
+        if (order == Prefix) array[index++] = node->data;
         toArrayHelper(node->left, array, index, order);
-        if (order == Order::Infix) array[index++] = node->data;
+        if (order == Infix) array[index++] = node->data;
         toArrayHelper(node->right, array, index, order);
-        if (order == Order::Postfix) array[index++] = node->data;
+        if (order == Postfix) array[index++] = node->data;
     }
 
     void clearNode(Node* node) {
@@ -318,7 +318,7 @@ public:
     }
 
     int* ToArray() {
-        return ToArray(Order::Infix);
+        return ToArray(Infix);
     }
 
     void ToLeft(int value) {
