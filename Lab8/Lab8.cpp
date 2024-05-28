@@ -266,15 +266,6 @@ public:
         return size;
     }
 
-    void toArrayHelper(Node* node, int*& array, int& index, Tree::Order order) {
-        if (!node) return;
-        if (order == Prefix) array[index++] = node->data;
-        toArrayHelper(node->left, array, index, order);
-        if (order == Infix) array[index++] = node->data;
-        toArrayHelper(node->right, array, index, order);
-        if (order == Postfix) array[index++] = node->data;
-    }
-
     void clearNode(Node* node) {
         if (!node) return;
         clearNode(node->left);
@@ -286,6 +277,15 @@ public:
         clearNode(root);
         root = nullptr;
         size = 0;
+    }
+
+    void toArrayHelper(Node* node, int*& array, int& index, Tree::Order order) {
+        if (!node) return;
+        if (order == Prefix) array[index++] = node->data;
+        toArrayHelper(node->left, array, index, order);
+        if (order == Infix) array[index++] = node->data;
+        toArrayHelper(node->right, array, index, order);
+        if (order == Postfix) array[index++] = node->data;
     }
 
     int* ToArray(Order order) {
@@ -417,6 +417,4 @@ int main() {
             break;
         }
     }
-
-    return 0;
 }
